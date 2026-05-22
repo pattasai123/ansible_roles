@@ -43,7 +43,7 @@
     remote_src: yes
 
 - name: copy the file
-  ansible.builtin.templates:
+  ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
   notify: restart nginx
