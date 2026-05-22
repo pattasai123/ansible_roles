@@ -1,0 +1,14 @@
+- name: Importing node js modeuls 
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: nodejs.yaml
+
+- name: Importing common modeuls 
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: common.yaml
+
+- name: Importing start_enable modeuls 
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: start_enable.yaml

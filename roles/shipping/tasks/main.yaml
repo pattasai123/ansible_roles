@@ -1,0 +1,38 @@
+- name: Importing maven modeuls 
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: maven.yaml
+
+- name: Importing common modeuls 
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: common.yaml
+
+- name: installing mysql
+  ansible.builtin.command: dnf install mysql -y 
+
+- name: install mysql python libraries
+  ansible.builtin.pip:
+    executable: pip3.9
+    name: "{{ item }}"
+  loop:
+  - cryptography
+  - PyMySQL
+        
+- name: loading data 
+  community.mysql.mysql_db:
+    state: import
+    name: all
+    login_host: "{{ MYSQL_HOST }}"
+    login_user: "{{ MYSQL_USER }}"
+    login_password: "{{ MYSQL_PASSWORD }}"
+    target: "{{ item }}"
+  loop:
+    - /app/db/schema.sql
+    - /app/db/app-user.sql 
+    - /app/db/master-data.sql
+    
+- name: Importing start_enable modeuls 
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: start_enable.yaml

@@ -1,0 +1,10 @@
+MONGODB_HOST: mongodb.bongu.online
+REDIS_HOST: redis.bongu.online
+MYSQL_HOST: mysql.bongu.online
+RABBITMQ_HOST: rabbitmq.bongu.online
+CATALOGUE_HOST: catalogue.bongu.online
+USER_HOST: user.bongu.online
+CART_HOST: cart.bongu.online
+SHIPPING_HOST: shipping.bongu.online
+PAYMENT_HOST: payment.bongu.online
+FRONTEND_HOST: frontend.bongu.online
