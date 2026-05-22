@@ -18,7 +18,13 @@
   loop:
   - cryptography
   - PyMySQL
-        
+- name: verify sql files
+  ansible.builtin.command: find /app -name "*.sql"
+  register: sql_output
+
+- debug:
+    msg: "{{ sql_output.stdout_lines }}"
+    
 - name: loading data 
   community.mysql.mysql_db:
     state: import
