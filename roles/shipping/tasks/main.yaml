@@ -1,4 +1,74 @@
 
+# - name: create roboshop system user
+#   ansible.builtin.user:
+#     name: roboshop
+#     comment: RoboShop System user
+#     system: true
+#     shell: /sbin/nologin
+#     home: /app
+# # Safe to remove directory, because 2nd time if we run it will download freshly. no error if does not exist
+# - name: remove app directory
+#   ansible.builtin.file:
+#     path: /app
+#     state: absent
+
+# - name: create app directory
+#   ansible.builtin.file:
+#     state: directory
+#     path: /app
+
+# - name: Delete {{ component }} file
+#   ansible.builtin.file:
+#     path: /tmp/{{ component }}.zip
+#     state: absent
+
+# - name: download {{ component }} application
+#   ansible.builtin.get_url:
+#     url: https://roboshop-artifacts.s3.amazonaws.com/{{ component }}-v3.zip
+#     dest: /tmp/{{ component }}.zip
+
+# - name: extract {{ component }} application
+#   ansible.builtin.unarchive:
+#     src: /tmp/{{ component }}.zip
+#     dest: /app
+#     remote_src: yes
+
+# - name: Importing maven modeuls 
+#   ansible.builtin.import_role:
+#     name: common
+#     tasks_from: maven.yaml
+
+
+
+# - name: install mysql python libraries
+#   ansible.builtin.pip:
+#     executable: pip3.9
+#     name: "{{ item }}"
+#   loop:
+#   - cryptography
+#   - PyMySQL
+
+# - name: verify sql files
+#   ansible.builtin.command: find /app -name "*.sql"
+
+# - name: loading data 
+#   community.mysql.mysql_db:
+#     state: import
+#     name: all
+#     login_host: "{{ MYSQL_HOST }}"
+#     login_user: "{{ MYSQL_USER }}"
+#     login_password: "{{ MYSQL_PASSWORD }}"
+#     target: "{{ item }}"
+#   loop:
+#     - /app/db/schema.sql
+#     - /app/db/app-user.sql 
+#     - /app/db/master-data.sql
+    
+# - name: Importing start_enable modeuls 
+#   ansible.builtin.import_role:
+#     name: common
+#     tasks_from: start_enable.yaml 
+
 - name: create roboshop system user
   ansible.builtin.user:
     name: roboshop
@@ -6,7 +76,7 @@
     system: true
     shell: /sbin/nologin
     home: /app
-# Safe to remove directory, because 2nd time if we run it will download freshly. no error if does not exist
+
 - name: remove app directory
   ansible.builtin.file:
     path: /app
@@ -33,23 +103,42 @@
     dest: /app
     remote_src: yes
 
-- name: Importing maven modeuls 
+- name: Importing maven modules
   ansible.builtin.import_role:
     name: common
     tasks_from: maven.yaml
+
+# IMPORTANT FIX
+- name: install mysql client
+  ansible.builtin.package:
+    name: mysql
+    state: present
+  ignore_errors: true
+
+# For Amazon Linux 2023 / RHEL9
+- name: install mariadb client
+  ansible.builtin.package:
+    name: mariadb105
+    state: present
+  ignore_errors: true
 
 - name: install mysql python libraries
   ansible.builtin.pip:
     executable: pip3.9
     name: "{{ item }}"
   loop:
-  - cryptography
-  - PyMySQL
+    - cryptography
+    - PyMySQL
 
 - name: verify sql files
   ansible.builtin.command: find /app -name "*.sql"
+  register: sql_files
 
-- name: loading data 
+- name: print sql files
+  ansible.builtin.debug:
+    var: sql_files.stdout_lines
+
+- name: loading data
   community.mysql.mysql_db:
     state: import
     name: all
@@ -59,10 +148,10 @@
     target: "{{ item }}"
   loop:
     - /app/db/schema.sql
-    - /app/db/app-user.sql 
+    - /app/db/app-user.sql
     - /app/db/master-data.sql
-    
-- name: Importing start_enable modeuls 
+
+- name: Importing start_enable modules
   ansible.builtin.import_role:
     name: common
     tasks_from: start_enable.yaml
