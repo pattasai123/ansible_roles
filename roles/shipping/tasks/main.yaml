@@ -1,15 +1,13 @@
-- name: Importing maven modeuls 
-  ansible.builtin.import_role:
-    name: common
-    tasks_from: maven.yaml
 
 - name: Importing common modeuls 
   ansible.builtin.import_role:
     name: common
     tasks_from: common.yaml
 
-- name: installing mysql
-  ansible.builtin.command: dnf install mysql -y 
+- name: Importing maven modeuls 
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: maven.yaml
 
 - name: install mysql python libraries
   ansible.builtin.pip:
@@ -18,6 +16,7 @@
   loop:
   - cryptography
   - PyMySQL
+  
 - name: verify sql files
   ansible.builtin.command: find /app -name "*.sql"
 
